@@ -42,13 +42,26 @@
 //     )
 // -------------->>> PAGINA DE FATO:  <<<----------------
 
-import { useState } from "react";
-import movies from "../data/movies.json"
+import { useState, useEffect } from "react";
 import MovieCard from "../components/MovieCard";
+import movies from "../data/movies.json";
 
 export default function MovieListPage() {
 
     const [search, setSearch] = useState('')
+    const [filmes, setFilmes] = useState([])
+
+
+    useEffect(() => {
+
+        fetch('https://api.themoviedb.org/3/movie/popular?api_key=7c572a9f5b3ba776080330d23bb76e1e&language=pt-br')
+
+        .then(data => data.json())
+        .then( res =>  setFilmes(res.results))
+        .catch(  erro => console.log(erro))
+        .finally( () => console.log ("fim"))
+    },[])
+
 
     const handleSearch = (event) => {
         setSearch(event.target.value)
@@ -67,17 +80,19 @@ export default function MovieListPage() {
                 value={search}
                 onChange={handleSearch}
             />
-            <section className="flex gap-5 ">
+            <section className=" gap-5 ">
 
 
                 {
-                    filemsfiltrados.length > 0 ? 
-                    filemsfiltrados 
-                        .map(filme => (
-                            <MovieCard key={filme.id} {...filme} />
-                        ))
-                        :
-                        <p>filem nao encontrado</p>
+                    filmes.map(filme => (
+                        <>
+                        <h1>{filme.title}</h1>
+                        <p>{filme.vote_average}</p>
+
+                        <img src={`https://image.tmdb.org/t/p/w1280${filme.backdrop_path}`}/>
+                        <img src={`https://image.tmdb.org/t/p/w500${filme.poster_path}`}/>
+                        </>
+                    ))
                 }
             </section>
 
